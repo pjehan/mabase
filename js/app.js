@@ -8,25 +8,28 @@ $(document).ready(function() {
     var $personnes = $("#personnes tbody");
     var $formPersonne = $("#form-personne");
 
+    function newPersonne(personne) {
+        var tr = $personnes.find("tr.hidden").clone();
+        tr.removeClass("hidden");
+        tr.find("td.firstname").text(personne.firstname);
+        tr.find("td.lastname").text(personne.lastname);
+        $personnes.append(tr);
+    }
+
     $.ajax({
         method: "GET",
         url: serverURL + "/personne"
     })
     .done(function(data) {
-        console.log(data)
-        var trTemplate = $personnes.find("tr.hidden");
-
         data.forEach(function(personne) {
-            var tr = trTemplate.clone();
-            tr.removeClass("hidden");
-            tr.find("td.firstname").text(personne.firstname);
-            tr.find("td.lastname").text(personne.lastname);
-            $personnes.append(tr);
+            newPersonne(personne);
         });
     });
 
     $formPersonne.submit(function(event) {
         event.preventDefault();
+
+        var self = this;
 
         var formMethod = $(this).attr("method");
         var formAction = $(this).attr("action");
@@ -42,8 +45,9 @@ $(document).ready(function() {
                 lastname: lastname
             }
         })
-        .done(function(){
-
+        .done(function(personne){
+            newPersonne(personne);
+            self.reset();
         });
     });
 
