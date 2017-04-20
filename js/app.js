@@ -13,7 +13,9 @@ $(document).ready(function() {
         tr.removeClass("hidden");
         tr.find("td.firstname").text(personne.firstname);
         tr.find("td.lastname").text(personne.lastname);
-        $personnes.append(tr);
+        tr.find("form").attr("action", serverURL + "/personne/" + personne.id);
+        $personnes.prepend(tr);
+        tr.hide().fadeIn();
     }
 
     $.ajax({
@@ -48,6 +50,23 @@ $(document).ready(function() {
         .done(function(personne){
             newPersonne(personne);
             self.reset();
+        });
+    });
+
+    $personnes.on("submit", "form", function(event){
+        event.preventDefault();
+
+        var self = this;
+
+        var formMethod = $(this).attr("method");
+        var formAction = $(this).attr("action");
+
+        $.ajax({
+            method: formMethod,
+            url: formAction
+        })
+        .done(function(){
+            $(self).closest("tr").fadeOut();
         });
     });
 
